@@ -45,5 +45,44 @@ namespace PrimeraPreEntrega.Repository
             return usuarios;
         }
 
+        public Usuario GetUsuariosByUserName(string userName)
+        {
+            string cmdText = "SELECT * FROM Usuario WHERE NombreUsuario = @NombreUsuario;";
+            Usuario _usuario = new Usuario();
+
+            using (SqlConnection sqlConnection = new SqlConnection(ConnectionString))
+            {
+                using (SqlCommand sqlCommand = new SqlCommand(cmdText, sqlConnection))
+                {
+
+                    sqlCommand.Parameters.Add(new SqlParameter("@NombreUsuario", SqlDbType.VarChar, 20)).Value = userName;
+
+
+                    sqlConnection.Open();
+
+                    using (SqlDataReader dataReader = sqlCommand.ExecuteReader())
+                    {
+                        if (dataReader.HasRows)
+                        {
+                            while (dataReader.Read())
+                            {
+                                Usuario usuario = new Usuario();
+                                usuario.Nombre = dataReader["Nombre"].ToString();
+                                usuario.Apellido = dataReader["Apellido"].ToString();
+                                usuario.NombreUsuario = dataReader["NombreUsuario"].ToString();
+                                usuario.Contraseña = dataReader["Contraseña"].ToString();
+                                usuario.Mail = dataReader["Mail"].ToString();
+
+                                _usuario = usuario;
+                            }
+                        }
+                    }
+                }
+            }
+
+            return _usuario;
+        }
+
+
     }
 }
